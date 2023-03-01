@@ -2,8 +2,7 @@ package cz.schrodlm.municipality;
 
 import cz.schrodlm.municipality.dao.MunicipalityRepository;
 import cz.schrodlm.municipality.domain.Municipality;
-import cz.schrodlm.municipality.file.Downloader;
-import cz.schrodlm.municipality.file.Unzipper;
+import cz.schrodlm.municipality.file.FileUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,15 +27,13 @@ public class MunicipalityApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         String link = "https://www.smartform.cz/download/kopidlno.xml.zip";
+        File out = new File("resources/download.xml.zip");
 
-        File out = new File("resources/kopidlno.xml.zip");
+        FileUtility fileUtility = new FileUtility();
 
-        Downloader d = new Downloader(link,out);
-        d.run();
-
-        Unzipper unzipper = new Unzipper();
-
-        unzipper.unzip("resources/kopidlno.xml.zip","resources");
+        fileUtility.download(link, out);
+        //dynamically unzip the downloaded file
+        fileUtility.unzip(out.getPath(), out.getParent());
 
         // Create a new entity
         Municipality m = new Municipality();
@@ -45,6 +42,9 @@ public class MunicipalityApplication implements CommandLineRunner {
 
         // Save the entity to the repository
         r.save(m);
+
+        // Delete downloaded zip file
+        out.delete();
     }
 
 
