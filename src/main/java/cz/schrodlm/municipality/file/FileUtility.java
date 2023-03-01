@@ -71,6 +71,7 @@ public class FileUtility {
             entry = zipIn.getNextEntry();
         }
         zipIn.close();
+
     }
 
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {

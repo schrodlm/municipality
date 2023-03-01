@@ -6,6 +6,13 @@ import jakarta.persistence.*;
 @Table(name="municipality")
 public class Municipality implements DomainEntity<Long>{
 
+    public Municipality(Long code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
+    public Municipality(){};
+
     @Id
     private Long code;
 
