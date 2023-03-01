@@ -1,4 +1,4 @@
-package com.example.municipality.domain;
+package cz.schrodlm.municipality.domain;
 
 public interface DomainEntity<T> {
 

@@ -1,8 +1,6 @@
-package com.example.municipality.domain;
+package cz.schrodlm.municipality.domain;
 
 import jakarta.persistence.*;
-
-import java.util.Collection;
 
 @Entity
 @Table(name="municipality")

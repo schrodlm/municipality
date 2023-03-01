@@ -1,4 +1,4 @@
-package com.example.municipality;
+package cz.schrodlm.municipality;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
