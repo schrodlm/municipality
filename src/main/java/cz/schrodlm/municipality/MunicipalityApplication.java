@@ -32,20 +32,30 @@ public class MunicipalityApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-
         String link = "https://www.smartform.cz/download/kopidlno.xml.zip";
-        File out = new File("resources/download.xml.zip");
+
+        //Create a directory for the resources
+        File destDir = new File("resources/municipality_data");
+        if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+
+
+        File out = new File(destDir.getPath() + "/download.xml.zip");
 
         FileUtility fileUtility = new FileUtility();
 
+        //download the file with provided link
         fileUtility.download(link, out);
+
         //dynamically unzip the downloaded file
         fileUtility.unzip(out.getPath(), out.getParent());
 
-
+        //parse unzipped XML files and push data to the database
         XMLMunicipalityParser parser = new XMLMunicipalityParser(municipalityRepository,municipalityPartRepository);
 
-        parser.parse("resources/20210331_OB_573060_UZSZ.xml");
+
+        parser.parse("resources/municipality_data");
 
         // Delete downloaded zip file
         out.delete();

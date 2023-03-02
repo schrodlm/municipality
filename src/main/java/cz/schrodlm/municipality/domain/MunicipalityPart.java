@@ -6,10 +6,13 @@ import jakarta.persistence.*;
 @Table(name="municipality_part")
 public class MunicipalityPart implements DomainEntity<Long>{
 
-    /*
-U obce stačí do DB vložit kód a název, u části obce kód, název a kód obce, ke které část obce patří
+    public MunicipalityPart(Long code, String name, String municipality_code) {
+        this.code = code;
+        this.name = name;
+        this.municipality_code = municipality_code;
+    }
 
- */
+    public MunicipalityPart(){};
 
     @Id
     private Long code;

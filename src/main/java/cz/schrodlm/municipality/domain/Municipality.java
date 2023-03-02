@@ -19,15 +19,6 @@ public class Municipality implements DomainEntity<Long>{
     @Column(name="name")
     private String name;
 
-
-
-
-
-    /*
-    U obce stačí do DB vložit kód a název, u části obce kód, název a kód obce, ke které část obce patří
-
-     */
-
     @Override
     public Long getCode() {
         return code;
