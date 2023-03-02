@@ -8,37 +8,38 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class FileUtility {
-    public FileUtility() {}
+    public FileUtility() {
+    }
 
 
     private static final int BUFFER_SIZE = 4096;
 
     /**
-     *  Download a file with a provided link and saves it to the file out
-     * @param link      - data URL
-     * @param out       - file which data will be downloaded into
+     * Download a file with a provided link and saves it to the file out
+     *
+     * @param link - data URL
+     * @param out  - file which data will be downloaded into
      */
-    public void download(String link, File out) throws IOException{
+    public void download(String link, File out) throws IOException {
         try {
 
             URL url = new URL(link);
-            HttpURLConnection http = (HttpURLConnection)url.openConnection();
-            double fileSize = (double)http.getContentLengthLong();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            double fileSize = (double) http.getContentLengthLong();
             BufferedInputStream in = new BufferedInputStream(http.getInputStream());
             FileOutputStream fos = new FileOutputStream(out);
-            BufferedOutputStream bout = new BufferedOutputStream(fos,BUFFER_SIZE);
+            BufferedOutputStream bout = new BufferedOutputStream(fos, BUFFER_SIZE);
             byte[] buffer = new byte[BUFFER_SIZE];
             double downloaded = 0.00;
             int read = 0;
             double percentDownloaded = 0.00;
 
             int iteration = 0;
-            while((read = in.read(buffer,0,BUFFER_SIZE)) >= 0)
-            {
-                bout.write(buffer,0,read);
+            while ((read = in.read(buffer, 0, BUFFER_SIZE)) >= 0) {
+                bout.write(buffer, 0, read);
                 downloaded += read;
-                percentDownloaded = (downloaded*100)/fileSize;
-                if(iteration++ % 15 == 0){
+                percentDownloaded = (downloaded * 100) / fileSize;
+                if (iteration++ % 15 == 0) {
                     String percent = String.format("%.1f", percentDownloaded);
                     System.out.println("Downloaded " + percent + "% of a file");
                 }
@@ -56,12 +57,14 @@ public class FileUtility {
 
     /**
      * Recursively unzips all content of the zipped file and saves its structure (paths of directories and files)
-     * @param zipFilePath       - file path to the zipped file
-     * @param destDirectory     - destination direction
-     * @throws IOException
+     *
+     * @param zipFilePath   - file path to the zipped file
+     * @param destDirectory - destination direction
      */
     public void unzip(String zipFilePath, String destDirectory) throws IOException {
+
         System.out.println("Unzipping downloaded file...");
+
         File destDir = new File(destDirectory);
         if (!destDir.exists()) {
             destDir.mkdir();
@@ -88,7 +91,8 @@ public class FileUtility {
 
     /**
      * Extracts single provided file from a zipped input stream
-     * @param zipIn         - zip input stream
+     *
+     * @param zipIn    - zip input stream
      * @param filePath
      */
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
@@ -100,5 +104,29 @@ public class FileUtility {
         }
         bos.close();
     }
+
+    /**
+     *
+     * @param directory - deletes directory content
+     */
+    public void deleteDirectoryContent(File directory) {
+        //directory is empty
+        if (directory.listFiles() == null) {
+            return;
+        }
+
+        for (final File fileEntry : directory.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                deleteDirectoryContent(fileEntry);
+                continue;
+            } else {
+                fileEntry.delete();
+            }
+        }
+        directory.delete();
+
+    }
 }
+
+
 

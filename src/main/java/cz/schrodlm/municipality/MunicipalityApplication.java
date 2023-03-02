@@ -2,7 +2,6 @@ package cz.schrodlm.municipality;
 
 import cz.schrodlm.municipality.dao.MunicipalityPartRepository;
 import cz.schrodlm.municipality.dao.MunicipalityRepository;
-import cz.schrodlm.municipality.domain.Municipality;
 import cz.schrodlm.municipality.file.FileUtility;
 import cz.schrodlm.municipality.parsing.XMLMunicipalityParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +28,26 @@ public class MunicipalityApplication implements CommandLineRunner {
 
     }
 
+    /**
+     * This program will download zipped XML files from the link provided, it expects specific format of XML files, it parses
+     * these XML files and saves specific data to the connected database (PostGreSQL) and deletes these downloaded files.
+     */
     @Override
     public void run(String... args) throws Exception {
 
+        //Download link
         String link = "https://www.smartform.cz/download/kopidlno.xml.zip";
 
         //Create a directory for the resources
         File destDir = new File("resources/municipality_data");
         if (!destDir.exists()) {
-            destDir.mkdir();
+             if(destDir.mkdir()) throw new RuntimeException();
         }
 
-
+        //out file will be used to store the zipped content
         File out = new File(destDir.getPath() + "/download.xml.zip");
 
+        //File utility class
         FileUtility fileUtility = new FileUtility();
 
         //download the file with provided link
@@ -58,10 +63,13 @@ public class MunicipalityApplication implements CommandLineRunner {
         //parse unzipped XML files and push data to the database
         XMLMunicipalityParser parser = new XMLMunicipalityParser(municipalityRepository,municipalityPartRepository);
 
-
+        //Parse and save data to the database
         parser.parse(destDir);
 
-        // Delete downloaded zip file
+        System.out.println("Deleting unzipped files...");
+        fileUtility.deleteDirectoryContent(destDir);
+
+        System.out.println("Done!");
     }
 
 

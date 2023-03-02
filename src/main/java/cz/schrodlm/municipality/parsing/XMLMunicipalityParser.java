@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 public class XMLMunicipalityParser {
@@ -37,7 +38,7 @@ public class XMLMunicipalityParser {
     }
 
     /**
-     *  Recursively parse all XML files in provided directory and saves them to the database.
+     *  Recursively parse all XML files in provided directory and saves them to the database. When file is parsed, it is deleted.
      *
      * @param dataDirectory                         - directory of XML files
      */
@@ -51,7 +52,7 @@ public class XMLMunicipalityParser {
 
         System.out.println("Parsing all xml files from " + dataDirectory.getPath());
 
-        for(final File fileEntry : dataDirectory.listFiles()) {
+        for(final File fileEntry : Objects.requireNonNull(dataDirectory.listFiles())) {
             if(fileEntry.isDirectory()){
                 parse(fileEntry);
                 continue;
@@ -127,6 +128,8 @@ public class XMLMunicipalityParser {
                 }
             }
             System.out.println("Parsing of " + fileEntry.getName() + " completed.");
+
         }
+
     }
 }
