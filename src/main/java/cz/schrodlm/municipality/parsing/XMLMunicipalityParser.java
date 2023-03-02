@@ -3,6 +3,7 @@ package cz.schrodlm.municipality.parsing;
 import cz.schrodlm.municipality.dao.MunicipalityPartRepository;
 import cz.schrodlm.municipality.dao.MunicipalityRepository;
 import cz.schrodlm.municipality.domain.Municipality;
+import cz.schrodlm.municipality.domain.MunicipalityPart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,36 +39,80 @@ public class XMLMunicipalityParser {
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(new File(filePath));
 
-        //NOrmalize the xml structure
+        //Normalize the XML structure
         document.getDocumentElement().normalize();
 
-        // Get all elements by their tag name
+        //============================================================
+        // MUNICIPALITY PARSING
+        //============================================================
+
+        // Get all municipalities by their tag name
         NodeList municipalityList = document.getElementsByTagName("vf:Obec");
 
 
-        for(int i = 0; i <municipalityList.getLength(); i++) {
+        for (int i = 0; i < municipalityList.getLength(); i++) {
             Node municipality = municipalityList.item(i);
-            if(municipality.getNodeType() == Node.ELEMENT_NODE) {
+            if (municipality.getNodeType() == Node.ELEMENT_NODE) {
 
                 Element municipalityElement = (Element) municipality;
 
+
                 //get specific municipality details
-                NodeList municipalityDetails =  municipality.getChildNodes();
+                //Municipality Entity will only have one code and one name provided so fetching item(0) can be done
+                try {
+                    String code = municipalityElement.getElementsByTagName("obi:Kod").item(0).getTextContent();
+                    String name = municipalityElement.getElementsByTagName("obi:Nazev").item(0).getTextContent();
 
-                String code = municipalityDetails.item(1).getTextContent();
-                String name = municipalityDetails.item(3).getTextContent();
 
-                Municipality municipalityEntity = new Municipality();
-                municipalityEntity.setName(name);
-                municipalityEntity.setCode(Long.parseLong(code));
+                    Municipality municipalityEntity = new Municipality();
+                    municipalityEntity.setName(name);
+                    municipalityEntity.setCode(Long.parseLong(code));
 
-                municipalityRepository.save(municipalityEntity);
-
+                    municipalityRepository.save(municipalityEntity);
+                }
+                catch(NullPointerException e)
+                {
+                    throw new RuntimeException("Error: Insufficient information/wrong format provided for Municipality Entity in the XML file");
+                }
             }
 
         }
 
+        //============================================================
+        // MUNICIPALITY PART PARSING
+        //============================================================
+
+        NodeList municipalityPartList = document.getElementsByTagName("vf:CastObce");
+
+
+        for (int i = 0; i < municipalityPartList.getLength(); i++) {
+            Node municipalityPart = municipalityPartList.item(i);
+            if (municipalityPart.getNodeType() == Node.ELEMENT_NODE) {
+
+                Element municipalityElement = (Element) municipalityPart;
+
+
+                //get specific municipality details
+
+                try{
+                    String code = municipalityElement.getElementsByTagName("coi:Kod").item(0).getTextContent();
+                    String name = municipalityElement.getElementsByTagName("coi:Nazev").item(0).getTextContent();
+                    String municipality_code = municipalityElement.getElementsByTagName("coi:Obec").item(0).getChildNodes().item(1).getTextContent();
+
+                    //TODO: Použít kontruktor
+                    MunicipalityPart municipalityPartEntity = new MunicipalityPart();
+                    municipalityPartEntity.setName(name);
+                    municipalityPartEntity.setCode(Long.parseLong(code));
+                    municipalityPartEntity.setMunicipality_code(municipality_code);
+
+                    municipalityPartRepository.save(municipalityPartEntity);
+                }
+                catch(NullPointerException e)
+                {
+                    throw new RuntimeException("Error: Insufficient information/wrong format provided for MunicipalityPart Entity in the XML file");
+                }
+            }
+        }
+
     }
 }
-
-

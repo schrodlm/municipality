@@ -44,6 +44,7 @@ public class MunicipalityApplication implements CommandLineRunner {
 
 
         XMLMunicipalityParser parser = new XMLMunicipalityParser(municipalityRepository,municipalityPartRepository);
+
         parser.parse("resources/20210331_OB_573060_UZSZ.xml");
 
         // Delete downloaded zip file
