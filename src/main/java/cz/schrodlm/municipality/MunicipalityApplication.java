@@ -51,14 +51,17 @@ public class MunicipalityApplication implements CommandLineRunner {
         //dynamically unzip the downloaded file
         fileUtility.unzip(out.getPath(), out.getParent());
 
+        //we can now delete downloaded zip
+        out.delete();
+
+
         //parse unzipped XML files and push data to the database
         XMLMunicipalityParser parser = new XMLMunicipalityParser(municipalityRepository,municipalityPartRepository);
 
 
-        parser.parse("resources/municipality_data");
+        parser.parse(destDir);
 
         // Delete downloaded zip file
-        out.delete();
     }
 
 

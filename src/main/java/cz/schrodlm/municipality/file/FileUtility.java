@@ -10,8 +10,14 @@ import java.util.zip.ZipInputStream;
 public class FileUtility {
     public FileUtility() {}
 
+
     private static final int BUFFER_SIZE = 4096;
 
+    /**
+     *  Download a file with a provided link and saves it to the file out
+     * @param link      - data URL
+     * @param out       - file which data will be downloaded into
+     */
     public void download(String link, File out) throws IOException{
         try {
 
@@ -40,7 +46,7 @@ public class FileUtility {
             }
             bout.close();
             in.close();
-            System.out.println("Download completed!");
+            System.out.println("Download completed.");
 
 
         } catch (MalformedURLException e) {
@@ -48,9 +54,14 @@ public class FileUtility {
         }
     }
 
-
+    /**
+     * Recursively unzips all content of the zipped file and saves its structure (paths of directories and files)
+     * @param zipFilePath       - file path to the zipped file
+     * @param destDirectory     - destination direction
+     * @throws IOException
+     */
     public void unzip(String zipFilePath, String destDirectory) throws IOException {
-
+        System.out.println("Unzipping downloaded file...");
         File destDir = new File(destDirectory);
         if (!destDir.exists()) {
             destDir.mkdir();
@@ -75,6 +86,11 @@ public class FileUtility {
 
     }
 
+    /**
+     * Extracts single provided file from a zipped input stream
+     * @param zipIn         - zip input stream
+     * @param filePath
+     */
     private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
         byte[] bytesIn = new byte[BUFFER_SIZE];

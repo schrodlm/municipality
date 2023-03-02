@@ -4,8 +4,6 @@ import cz.schrodlm.municipality.dao.MunicipalityPartRepository;
 import cz.schrodlm.municipality.dao.MunicipalityRepository;
 import cz.schrodlm.municipality.domain.Municipality;
 import cz.schrodlm.municipality.domain.MunicipalityPart;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,31 +18,49 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
-@Component
+@Service
 public class XMLMunicipalityParser {
 
     MunicipalityRepository municipalityRepository;
 
     MunicipalityPartRepository municipalityPartRepository;
 
+    /**
+     * Contructor
+     *
+     * @param municipalityRepository            - repository of municipality
+     * @param municipalityPartRepository        - repository of municipalityPart
+     */
     public XMLMunicipalityParser(MunicipalityRepository municipalityRepository, MunicipalityPartRepository municipalityPartRepository) {
         this.municipalityRepository = municipalityRepository;
         this.municipalityPartRepository = municipalityPartRepository;
     }
 
-    public void parse(String filePath) throws ParserConfigurationException, IOException, SAXException {
+    /**
+     *  Recursively parse all XML files in provided directory and saves them to the database.
+     *
+     * @param dataDirectory                         - directory of XML files
+     */
+    public void parse(File dataDirectory) throws ParserConfigurationException, IOException, SAXException {
 
-        File dataDirectory = new File(filePath);
+        //directory is empty
+        if(dataDirectory.listFiles() == null){
+            System.out.println("Resource directory " + dataDirectory.getPath() + "is empty");
+            return;
+        }
 
+        System.out.println("Parsing all xml files from " + dataDirectory.getPath());
 
-
-
-        for(filePath) {
+        for(final File fileEntry : dataDirectory.listFiles()) {
+            if(fileEntry.isDirectory()){
+                parse(fileEntry);
+                continue;
+            }
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new File(filePath));
+            Document document = builder.parse(fileEntry);
 
             //Normalize the XML structure
             document.getDocumentElement().normalize();
@@ -110,6 +126,7 @@ public class XMLMunicipalityParser {
                     }
                 }
             }
+            System.out.println("Parsing of " + fileEntry.getName() + " completed.");
         }
     }
 }
